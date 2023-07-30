@@ -1,7 +1,7 @@
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
-  show-actuator: true
+  show-actuator: false
 management:
   endpoints:
     web:
@@ -10,3 +10,22 @@ management:
 server:
   servlet:
     context-path: /messenger
+spring:
+  h2:
+    console:
+      enabled: true
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:messengerDb
+    username: sa
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        globally_quoted_identifiers: true
+        globally_quoted_identifiers_skip_column_definitions: true
+  jackson:
+    default-property-inclusion: NON_NULL
