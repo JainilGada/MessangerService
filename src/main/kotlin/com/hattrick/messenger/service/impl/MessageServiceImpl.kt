@@ -3,6 +3,8 @@ package com.hattrick.messenger.service.impl
 import com.hattrick.messenger.config.RoomType
 import com.hattrick.messenger.dto.MessageResponse
 import com.hattrick.messenger.entity.Message
+import com.hattrick.messenger.entity.MessageReadStatus
+import com.hattrick.messenger.entity.User
 import com.hattrick.messenger.exception.CannotSendMessageToSelfException
 import com.hattrick.messenger.exception.UserNotFoundException
 import com.hattrick.messenger.mappers.messageToMessageResponse
@@ -27,7 +29,7 @@ class MessageServiceImpl(
         val fromUser = userService.findUserByUsername(from) ?: throw UserNotFoundException("User with username $from not found")
         val toUser = userService.findUserByUsername(to) ?: throw UserNotFoundException("User with username $to not found")
 
-        require(fromUser != toUser) { CannotSendMessageToSelfException("Cannot send message to self") }
+        if(fromUser == toUser) { throw CannotSendMessageToSelfException("Cannot send message to self") }
 
         val chatRoom = chatRoomService.fetchChatRoom(listOf(fromUser, toUser))
             ?: chatRoomService.createRoom(
@@ -54,14 +56,23 @@ class MessageServiceImpl(
         val messages = messageRepository.findInChatRoom(chatRooms)
             .filter { it.sender != user }
             .filter { it.room.roomType == RoomType.ONE_TO_ONE }
+            .filter { it.messageReadStatuses.none { messageReadStatus -> messageReadStatus.user == user } }
 
-        logger.info("Found messages $messages"  )
+        //Assuming that the user has read the messages
+        messages.forEach { markMessageAsRead(it, user) }
 
         return messageToMessageResponse(messages)
     }
 
     override fun getChatHistory(user1: String, user2: String): List<Message> {
         TODO()
+    }
+
+    private fun markMessageAsRead(message: Message, user: User) {
+        val messageReadStatus =  MessageReadStatus(user = user,  message = message, readAt = LocalDateTime.now())
+        message.messageReadStatuses.add(messageReadStatus)
+        logger.info("Message ${message.content} read by user $user at messageReadStatus.readAt ")
+        messageRepository.save(message)
     }
 
 }

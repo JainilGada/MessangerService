@@ -85,6 +85,9 @@ class MessageController(
         } catch (e: CannotSendMessageToSelfException) {
             ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(Response(status = Constants.FAILURE, message = e.message))
+        } catch (e: CannotSendMessageToSelfException) {
+            ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(Response(status = Constants.FAILURE, message = e.message))
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(Response(status = Constants.FAILURE, message = "Something unexpected went wrong"))

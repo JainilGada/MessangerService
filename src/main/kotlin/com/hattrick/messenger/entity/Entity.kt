@@ -52,7 +52,11 @@ class User(
 
     @Column
     var lastLogoutTime: LocalDateTime = LocalDateTime.MIN
-) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "User(id=$id, username='$username'))"
+    }
+}
 
 @Entity
 class ChatRoom(
@@ -68,7 +72,11 @@ class ChatRoom(
 
     @OneToMany(mappedBy = "room", cascade = [CascadeType.ALL], orphanRemoval = true)
     val chatRoomUsers: MutableList<ChatRoomUser> = mutableListOf(),
-) : BaseEntity()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "ChatRoom(id=$id, name=$name, roomType=$roomType)"
+    }
+}
 
 @Entity
 class ChatRoomUser(
@@ -83,7 +91,7 @@ class ChatRoomUser(
     val room: ChatRoom
 ) : BaseEntity()
 
-/*
+
 @Entity
 class MessageReadStatus(
     @Id
@@ -98,9 +106,6 @@ class MessageReadStatus(
 
     val readAt: LocalDateTime = LocalDateTime.now()
 ) : BaseEntity()
-*/
-
-
 
 @Entity
 class Message(
@@ -120,6 +125,10 @@ class Message(
     @Column(nullable = false)
     val sentAt: LocalDateTime = LocalDateTime.now(),
 
-    /*@OneToMany(mappedBy = "message", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val messageReadStatuses: MutableList<MessageReadStatus> = mutableListOf(),*/
-) : BaseEntity()
+    @OneToMany(mappedBy = "message", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val messageReadStatuses: MutableList<MessageReadStatus> = mutableListOf()
+) : BaseEntity() {
+    override fun toString(): String {
+        return "Message(id=$id, sender=${sender.username}, content='$content', sentAt=$sentAt)"
+    }
+}

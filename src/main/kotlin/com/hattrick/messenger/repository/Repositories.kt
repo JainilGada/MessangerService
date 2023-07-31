@@ -30,13 +30,3 @@ interface MessageRepository : JpaRepository<Message, Long> {
     fun findInChatRoom(rooms: List<ChatRoom>): List<Message>
 
 }
-
-/*
-@Repository
-interface MessageReadStatusRepository : JpaRepository<MessageReadStatus, Long> {
-}
-*/
-
-@Repository
-interface ChatRoomUserRepository : JpaRepository<ChatRoomUser, Long> {
-}
