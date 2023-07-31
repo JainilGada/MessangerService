@@ -1,6 +1,25 @@
-### PROBLEM STATEMENT
 
-## Simple Messenger System [48 Hrs]
+## Deplpoyment instruction
+
+1. Install java 17
+2. Check java version using command
+```
+echo $JAVA_HOME
+```
+3. clone the project 
+4. run the following command to run the gradle project
+```
+./gradlew bootRun
+```
+5. Swagger documentation can be found at
+```
+http://localhost:8080/messenger/swagger-ui/index.html
+```
+
+
+## PROBLEM STATEMENT
+
+### Simple Messenger System [48 Hrs]
 
 Submit a zipped source code folder with a readme on how to make and deploy the code,
 follow the API names given in the exhaustive examples below. <br>
