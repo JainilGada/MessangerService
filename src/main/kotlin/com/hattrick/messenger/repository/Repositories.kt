@@ -28,5 +28,4 @@ interface MessageRepository : JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE m.room IN :rooms")
     fun findInChatRoom(rooms: List<ChatRoom>): List<Message>
-
 }

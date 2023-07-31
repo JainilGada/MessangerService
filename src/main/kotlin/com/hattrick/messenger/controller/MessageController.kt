@@ -1,6 +1,9 @@
 package com.hattrick.messenger.controller
 
 import com.hattrick.messenger.config.Constants
+import com.hattrick.messenger.dto.ChatHistoryResponse
+import com.hattrick.messenger.dto.FetchChatHistoryRequest
+import com.hattrick.messenger.dto.FetchUnreadMessageRequest
 import com.hattrick.messenger.dto.LoginRequest
 import com.hattrick.messenger.dto.LogoutRequest
 import com.hattrick.messenger.dto.RegisterRequest
@@ -29,17 +32,17 @@ class MessageController(
 
     @PostMapping("/create/user")
     fun register(@RequestBody request: RegisterRequest): ResponseEntity<*> {
-        return respondWith { userService.register(request.username, request.password) }
+        return respondWith { userService.register(username = request.username, password = request.password) }
     }
 
     @PostMapping("/login")
     fun login(@RequestBody request: LoginRequest): ResponseEntity<*> {
-        return respondWith { userService.login(request.username, request.password) }
+        return respondWith { userService.login(username = request.username, password = request.password) }
     }
 
     @PostMapping("/logout")
     fun logout(@RequestBody request: LogoutRequest): ResponseEntity<*> {
-        return respondWith { userService.logout(request.username) }
+        return respondWith { userService.logout(username = request.username) }
     }
 
     @GetMapping("/users")
@@ -50,26 +53,20 @@ class MessageController(
 
     @PostMapping("/send-message")
     fun sendMessage(@RequestBody request: SendMessageRequest): ResponseEntity<*> {
-        return respondWith {
-            messageService.sendMessage(
-                from = request.from,
-                to = request.to,
-                text = request.text
-            )
-        }
+        return respondWith { messageService.sendMessage(from = request.from, to = request.to, text = request.text) }
     }
 
-    @GetMapping("/unread-messages/{username}")
+    @GetMapping("/get/unread/{username}")
     fun getUnreadMessages(@PathVariable username: String): ResponseEntity<*> {
         return respondWith { messageService.getUnreadMessagesForUser(username)}
     }
 
-    @GetMapping("/chat-history")
+    @GetMapping("/chat-history/{user}/{friend}")
     fun getChatHistory(
-        @RequestParam senderUsername: String,
-        @RequestParam receiverUsername: String
-    ): List<Message> {
-        TODO()
+        @PathVariable user: String,
+        @PathVariable friend: String
+    ): ResponseEntity<*> {
+        return respondWith { messageService.getChatHistory(user1 = user, user2 =friend) }
     }
 
     fun <T> respondWith(block: () -> T): ResponseEntity<Response<T>> {
@@ -93,7 +90,4 @@ class MessageController(
                 .body(Response(status = Constants.FAILURE, message = "Something unexpected went wrong"))
         }
     }
-
 }
-
-

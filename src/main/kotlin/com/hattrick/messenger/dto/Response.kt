@@ -9,8 +9,12 @@ data class Response<T> (
 data class UserResponse(
     val username: String,
 )
-
 data class MessageResponse(
     val username: String,
     val text: List<String>,
+)
+
+data class ChatHistoryResponse(
+    val username: String,
+    val text: String,
 )

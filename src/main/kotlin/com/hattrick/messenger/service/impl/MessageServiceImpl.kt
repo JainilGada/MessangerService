@@ -1,12 +1,14 @@
 package com.hattrick.messenger.service.impl
 
 import com.hattrick.messenger.config.RoomType
+import com.hattrick.messenger.dto.ChatHistoryResponse
 import com.hattrick.messenger.dto.MessageResponse
 import com.hattrick.messenger.entity.Message
 import com.hattrick.messenger.entity.MessageReadStatus
 import com.hattrick.messenger.entity.User
 import com.hattrick.messenger.exception.CannotSendMessageToSelfException
 import com.hattrick.messenger.exception.UserNotFoundException
+import com.hattrick.messenger.mappers.messageToChatHistoryResponse
 import com.hattrick.messenger.mappers.messageToMessageResponse
 import com.hattrick.messenger.repository.MessageRepository
 import com.hattrick.messenger.service.ChatRoomService
@@ -51,8 +53,6 @@ class MessageServiceImpl(
 
         val chatRooms = chatRoomService.fetchChatRooms(listOf(user))
 
-        logger.info("Found chat rooms $chatRooms"  )
-
         val messages = messageRepository.findInChatRoom(chatRooms)
             .filter { it.sender != user }
             .filter { it.room.roomType == RoomType.ONE_TO_ONE }
@@ -60,12 +60,20 @@ class MessageServiceImpl(
 
         //Assuming that the user has read the messages
         messages.forEach { markMessageAsRead(it, user) }
-
         return messageToMessageResponse(messages)
     }
 
-    override fun getChatHistory(user1: String, user2: String): List<Message> {
-        TODO()
+    override fun getChatHistory(user1: String, user2: String): List<ChatHistoryResponse> {
+        val fromUser = userService.findUserByUsername(user1) ?: throw UserNotFoundException("User with username $user1 not found")
+        val toUser = userService.findUserByUsername(user1) ?: throw UserNotFoundException("User with username $user2 not found")
+
+        val chatRooms = chatRoomService.fetchChatRooms(listOf(fromUser, toUser))
+
+        val messages = messageRepository.findInChatRoom(chatRooms)
+            .filter { it.room.roomType == RoomType.ONE_TO_ONE }
+            .sortedBy { it.sentAt }
+
+        return messageToChatHistoryResponse(messages)
     }
 
     private fun markMessageAsRead(message: Message, user: User) {

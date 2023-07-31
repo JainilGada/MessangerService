@@ -1,5 +1,6 @@
 package com.hattrick.messenger.mappers
 
+import com.hattrick.messenger.dto.ChatHistoryResponse
 import com.hattrick.messenger.dto.MessageResponse
 import com.hattrick.messenger.dto.UserResponse
 import com.hattrick.messenger.entity.Message
@@ -16,5 +17,14 @@ fun messageToMessageResponse(messages: List<Message>): List<MessageResponse> {
     return groupedMessages.map { (username, messagesBySender) ->
         val texts = messagesBySender.map { it.content }
         MessageResponse(username, texts)
+    }
+}
+
+fun messageToChatHistoryResponse(messages: List<Message>): List<ChatHistoryResponse> {
+    return messages.map {
+        ChatHistoryResponse(
+            username = it.sender.username,
+            text = it.content,
+        )
     }
 }
