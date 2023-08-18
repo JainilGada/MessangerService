@@ -49,6 +49,12 @@ tasks.withType<KotlinCompile> {
 	}
 }
 
+tasks.getByName<Jar>("jar") {
+	manifest {
+		attributes["Main-Class"] = "com.hattrick.messenger.MessengerApplication.kt" // Replace with your main Kotlin class
+	}
+}
+
 tasks.withType<Test> {
 	useJUnitPlatform()
 }
